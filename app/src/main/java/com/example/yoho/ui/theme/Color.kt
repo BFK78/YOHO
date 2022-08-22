@@ -1,0 +1,13 @@
+package com.example.yoho.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+val Purple200 = Color(0xFFBB86FC)
+val Purple500 = Color(0xFF6200EE)
+val Purple700 = Color(0xFF3700B3)
+val Teal200 = Color(0xFF03DAC5)
+
+val ApplicationBlue = Color(0xFF246bfd)
+val White = Color.White
+
+val error = Color(0xFFB00020)
