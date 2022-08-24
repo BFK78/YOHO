@@ -13,6 +13,7 @@ object EndPoints {
     const val GET_EMAIL = "users/email-verification"
     const val VERIFY_EMAIL = "users/verify-email"
     const val UPDATE_PASSWORD = "profile/update-password"
+    const val SCHEDULE_MEETING = "meeting/schedule-meeting"
 
     const val test = "test"
 

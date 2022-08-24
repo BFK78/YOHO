@@ -9,10 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -26,8 +23,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.yoho.domain.model.local.Meeting
 import com.example.yoho.presentation.screens.authentication.util.checkDOB
 import com.example.yoho.presentation.screens.common.AppButton
+import com.example.yoho.presentation.screens.main.home.list
+import okhttp3.internal.wait
 import java.util.*
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -43,6 +43,22 @@ fun ScheduleMeetingScreen() {
     val month = calendar.get(Calendar.MONTH)
 
     val year = calendar.get(Calendar.YEAR)
+
+    val repeatExpanded = remember {
+        mutableStateOf(false)
+    }
+
+    val repeatList = listOf("Never", "Always")
+
+    val repeatIcon = if (repeatExpanded.value) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowRight
+
+    val timeZoneExpanded = remember {
+        mutableStateOf(false)
+    }
+
+    val timeZoneList = listOf("Chennai(+5:30)", "New York(+0:00)")
+
+    val timezoneIcon = if (timeZoneExpanded.value) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowRight
 
     val meetingName = remember {
         mutableStateOf("")
@@ -70,11 +86,11 @@ fun ScheduleMeetingScreen() {
 
 
     val timeZone = remember {
-        mutableStateOf("")
+        mutableStateOf("Chennai(+5:30)")
     }
 
     val repeat = remember {
-        mutableStateOf("")
+        mutableStateOf("Never")
     }
 
     val datePickerDialog = DatePickerDialog(context,
@@ -211,7 +227,7 @@ fun ScheduleMeetingScreen() {
                         IconButton(onClick = {
                             TimePickerDialog(
                                 context,
-                                TimePickerDialog.OnTimeSetListener { timePicker, hour, minute ->
+                                { _, hour, minute ->
                                     if (hour < 10) {
                                         if (minute < 10) {
                                             from.value = "0$hour:0$minute"
@@ -261,7 +277,7 @@ fun ScheduleMeetingScreen() {
                         IconButton(onClick = {
                             TimePickerDialog(
                                 context,
-                                TimePickerDialog.OnTimeSetListener { timePicker, hour, minute ->
+                                { _, hour, minute ->
                                     if (hour < 10) {
                                         if (minute < 10) {
                                             to.value = "0$hour:0$minute"
@@ -305,12 +321,29 @@ fun ScheduleMeetingScreen() {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Chennai(+5:30)",
+                            text = timeZone.value.toString(),
                             fontWeight = FontWeight.Bold
                         )
-                        IconButton(onClick = { /*TODO*/ }) {
+                        DropdownMenu(
+                            expanded = timeZoneExpanded.value,
+                            onDismissRequest = { timeZoneExpanded.value = false })
+                        {
+
+                            timeZoneList.forEach {
+                                DropdownMenuItem(
+                                    onClick = {
+                                        timeZone.value = it
+                                        timeZoneExpanded.value = false
+                                    }
+                                ) {
+                                    Text(text = it)
+                                }
+                            }
+
+                        }
+                        IconButton(onClick = { timeZoneExpanded.value = true }) {
                             Icon(
-                                imageVector = Icons.Default.KeyboardArrowRight,
+                                imageVector = timezoneIcon,
                                 contentDescription = "Arrow Forward"
                             )
                         }
@@ -333,12 +366,29 @@ fun ScheduleMeetingScreen() {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Never",
+                            text = repeat.value,
                             fontWeight = FontWeight.Bold
                         )
-                        IconButton(onClick = { /*TODO*/ }) {
+                        DropdownMenu(
+                            expanded = repeatExpanded.value,
+                            onDismissRequest = { repeatExpanded.value = false })
+                        {
+
+                            repeatList.forEach {
+                                DropdownMenuItem(
+                                    onClick = {
+                                        repeat.value = it
+                                        repeatExpanded.value = false
+                                    }
+                                ) {
+                                    Text(text = it)
+                                }
+                            }
+
+                        }
+                        IconButton(onClick = { repeatExpanded.value = true }) {
                             Icon(
-                                imageVector = Icons.Default.KeyboardArrowRight,
+                                imageVector = repeatIcon,
                                 contentDescription = "Arrow Forward"
                             )
                         }
@@ -401,6 +451,7 @@ fun ScheduleMeetingScreen() {
                     )
                 }
             }
+
             AppButton(
                 text = "Join",
                 modifier = Modifier
@@ -409,6 +460,20 @@ fun ScheduleMeetingScreen() {
                     .padding(horizontal = 24.dp, vertical = 24.dp)
                     .clip(shape = RoundedCornerShape(25.dp)),
             ) {
+
+                val meeting = Meeting(
+                    meetingTopic = meetingName.value,
+                    date = date.toString(),
+                    from = from.toString(),
+                    to = to.toString(),
+                    timeZone = timeZone.toString(),
+                    repeat = repeat.toString(),
+                    waitingRoom = waitingRoom.value,
+                    meetingLink = "",
+                    meetingId = ""
+                )
+
+
 
             }
         }

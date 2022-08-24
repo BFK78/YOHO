@@ -9,5 +9,6 @@ data class Meeting(
     val repeat: String,
     val waitingRoom: Boolean,
     val meetingLink: String,
-    val meetingId: String
+    val meetingId: String,
+    val status: String = "Join"
 )
