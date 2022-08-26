@@ -43,12 +43,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        ScheduleMeetingScreen()
-                    }
+                    ApplicationNavigation(navHostController = navHostController)
                 }
             }
         }

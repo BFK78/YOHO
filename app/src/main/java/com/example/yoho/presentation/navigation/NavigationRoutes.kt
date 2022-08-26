@@ -135,7 +135,9 @@ fun NavGraphBuilder.mainNavigation(
         }
 
         composable(route = Screens.ScheduleMeetingScreen.route) {
-            ScheduleMeetingScreen()
+            ScheduleMeetingScreen(
+                navHostController = navHostController
+            )
         }
 
         //#2

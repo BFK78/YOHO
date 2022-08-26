@@ -10,4 +10,6 @@ interface MainRepository {
 
     suspend fun scheduleMeeting(meeting: Meeting): Flow<Resource<MeetingResponse>>
 
+    suspend fun getAllScheduledMeeting(): Flow<Resource<MeetingResponse>>
+
 }

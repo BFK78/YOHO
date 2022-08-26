@@ -10,10 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,16 +20,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.example.yoho.domain.model.local.Meeting
 import com.example.yoho.presentation.screens.authentication.util.checkDOB
 import com.example.yoho.presentation.screens.common.AppButton
+import com.example.yoho.presentation.screens.common.LoadingDialog
 import com.example.yoho.presentation.screens.main.home.list
+import com.example.yoho.presentation.screens.main.home.viewmodel.HomeViewModel
+import com.example.yoho.presentation.util.screens.Screens
 import okhttp3.internal.wait
 import java.util.*
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun ScheduleMeetingScreen() {
+fun ScheduleMeetingScreen(
+    navHostController: NavHostController,
+    viewModel: HomeViewModel = hiltViewModel(),
+) {
 
     val context = LocalContext.current
 
@@ -93,6 +98,19 @@ fun ScheduleMeetingScreen() {
         mutableStateOf("Never")
     }
 
+    val openDialog = remember {
+        mutableStateOf(false)
+    }
+
+    val state = viewModel.scheduleMeetingState
+
+    LaunchedEffect(key1 = state.value.isLoading) {
+        openDialog.value = state.value.isLoading
+        if (state.value.data?.status == true && !state.value.isLoading) {
+            navHostController.popBackStack()
+        }
+    }
+
     val datePickerDialog = DatePickerDialog(context,
         { _: DatePicker, year: Int, month: Int, day: Int ->
 
@@ -113,7 +131,9 @@ fun ScheduleMeetingScreen() {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = {
+                        navHostController.popBackStack()
+                    }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Arrow back icon"
@@ -135,6 +155,8 @@ fun ScheduleMeetingScreen() {
             modifier = Modifier
                 .fillMaxSize()
         ) {
+            
+            LoadingDialog(openDialog = openDialog)
 
             Column(
                 modifier = Modifier
@@ -463,17 +485,17 @@ fun ScheduleMeetingScreen() {
 
                 val meeting = Meeting(
                     meetingTopic = meetingName.value,
-                    date = date.toString(),
-                    from = from.toString(),
-                    to = to.toString(),
-                    timeZone = timeZone.toString(),
-                    repeat = repeat.toString(),
+                    date = date.value.toString(),
+                    from = from.value.toString(),
+                    to = to.value.toString(),
+                    timeZone = timeZone.value.toString(),
+                    repeat = repeat.value.toString(),
                     waitingRoom = waitingRoom.value,
                     meetingLink = "",
                     meetingId = ""
                 )
 
-
+                viewModel.scheduleMeeting(meeting = meeting)
 
             }
         }

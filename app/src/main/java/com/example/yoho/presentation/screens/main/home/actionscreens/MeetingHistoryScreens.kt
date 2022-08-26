@@ -12,15 +12,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.yoho.domain.model.local.Meeting
 import com.example.yoho.presentation.screens.main.home.SingleMeetingHistory
 import com.example.yoho.presentation.screens.main.home.list
+import com.example.yoho.presentation.screens.main.home.viewmodel.HomeViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MeetingHistoryScreen(
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
+
+    val meetingList = viewModel.scheduledMeetingState
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -59,8 +66,8 @@ fun MeetingHistoryScreen(
     ) {
 
         LazyColumn {
-            items(list)  {
-                SingleMeetingHistory(model = it)
+            items(meetingList.value.data?.data as List<*>)  {
+                SingleMeetingHistory(model = it as Meeting)
             }
         }
 

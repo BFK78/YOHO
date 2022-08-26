@@ -1,6 +1,7 @@
 package com.example.yoho.presentation.screens.main.home
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
@@ -40,6 +42,8 @@ import com.example.yoho.presentation.navigation.BottomNavigationBar
 import com.example.yoho.presentation.screens.common.SuccessDialog
 import kotlinx.coroutines.delay
 import com.example.yoho.R
+import com.example.yoho.domain.model.local.Meeting
+import com.example.yoho.presentation.screens.main.home.viewmodel.HomeViewModel
 import com.example.yoho.presentation.util.screens.Screens
 import kotlinx.coroutines.launch
 
@@ -193,6 +197,7 @@ val list = mutableListOf(
 @Composable
 fun HomeScreen(
     navHostController: NavHostController,
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val openDialog = remember {
         mutableStateOf(false)
@@ -204,11 +209,15 @@ fun HomeScreen(
         ModalBottomSheetValue.Hidden
     )
 
+    val meetingList = viewModel.scheduledMeetingState
+
     //Success Dialog closing
     LaunchedEffect(key1 = true) {
+        viewModel.getAllScheduledMeeting()
+    }
 
-        delay(5000)
-        openDialog.value = false
+    LaunchedEffect(key1 = meetingList.value.data) {
+        Log.i("meeting", meetingList.value.data?.data.toString())
     }
 
     val search = remember {
@@ -385,7 +394,7 @@ fun HomeScreen(
                                     .clip(shape = CircleShape)
                                     .background(color = MaterialTheme.colors.primary)
                                     .clickable {
-                                       navHostController.navigate(Screens.ScheduleMeetingScreen.route)
+                                        navHostController.navigate(Screens.ScheduleMeetingScreen.route)
                                     },
                                 backgroundColor = Color(0xFFFF798D),
                                 elevation = 4.dp,
@@ -459,9 +468,11 @@ fun HomeScreen(
                             alpha = 0.1f
                         )
                     )
-                    LazyColumn() {
-                        items(list) {
-                            SingleMeetingHistory(model = it)
+                    if (meetingList.value.data != null) {
+                        LazyColumn() {
+//                            items(meetingList.value.data?.data as List<Meeting>) {
+//                                SingleMeetingHistory(model = it)
+//                            }
                         }
                     }
                 }
@@ -540,7 +551,7 @@ fun HomeTopBar(
 
 @Composable
 fun SingleMeetingHistory(
-    model: MeetingModel
+    model: Meeting
 ) {
     Column(
         modifier = Modifier
@@ -553,7 +564,7 @@ fun SingleMeetingHistory(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = model.time,
+                text = "${model.from}-${model.to}",
                 fontSize = 14.sp
             )
             Column(
@@ -564,7 +575,7 @@ fun SingleMeetingHistory(
                     fontSize = 14.sp
                 )
                 Text(
-                    text = model.meetingTitle,
+                    text = model.meetingTopic,
                     fontWeight = FontWeight.Bold
                 )
                 Text(

@@ -21,4 +21,15 @@ class MainRepositoryImplementation(
             emit(Resource.Error(message = e.message.toString()))
         }
     }
+
+    override suspend fun getAllScheduledMeeting(): Flow<Resource<MeetingResponse>> = flow {
+        emit(Resource.Loading())
+
+        try {
+            val response = mainApi.getScheduledMeetings()
+            emit(Resource.Success(data = response))
+        } catch (e: Exception) {
+            emit(Resource.Error(message = e.message.toString()))
+        }
+    }
 }
