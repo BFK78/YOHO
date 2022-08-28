@@ -1,8 +1,6 @@
 package com.example.yoho.presentation.screens.main.home
 
 import android.annotation.SuppressLint
-import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,7 +21,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -32,7 +29,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -40,7 +36,6 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.example.yoho.presentation.navigation.BottomNavigationBar
 import com.example.yoho.presentation.screens.common.SuccessDialog
-import kotlinx.coroutines.delay
 import com.example.yoho.R
 import com.example.yoho.domain.model.local.Meeting
 import com.example.yoho.presentation.screens.main.home.viewmodel.HomeViewModel
@@ -213,11 +208,7 @@ fun HomeScreen(
 
     //Success Dialog closing
     LaunchedEffect(key1 = true) {
-        viewModel.getAllScheduledMeeting()
-    }
-
-    LaunchedEffect(key1 = meetingList.value.data) {
-        Log.i("meeting", meetingList.value.data?.data.toString())
+        viewModel.getAllCompletedMeeting()
     }
 
     val search = remember {
@@ -457,7 +448,7 @@ fun HomeScreen(
                                 append("See All")
                             }
                         }) {
-
+                            navHostController.navigate(Screens.MeetingHistoryScreen.route)
                         }
                     }
 
@@ -470,9 +461,9 @@ fun HomeScreen(
                     )
                     if (meetingList.value.data != null) {
                         LazyColumn() {
-//                            items(meetingList.value.data?.data as List<Meeting>) {
-//                                SingleMeetingHistory(model = it)
-//                            }
+                            items(meetingList.value.data!!) {
+                                SingleMeetingHistory(model = it)
+                            }
                         }
                     }
                 }
@@ -559,15 +550,18 @@ fun SingleMeetingHistory(
             .padding(16.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "${model.from}-${model.to}",
+                text = model.from,
                 fontSize = 14.sp
             )
             Column(
+                modifier = Modifier
+                    .width(220.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
@@ -576,11 +570,16 @@ fun SingleMeetingHistory(
                 )
                 Text(
                     text = model.meetingTopic,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Start,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
                 )
                 Text(
-                    text = "Meeting ID : ${model.meetingId}",
-                    fontSize = 14.sp
+                    text = "Meeting ID : 321 31245 45",
+                    fontSize = 14.sp,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
                 )
             }
             Text(

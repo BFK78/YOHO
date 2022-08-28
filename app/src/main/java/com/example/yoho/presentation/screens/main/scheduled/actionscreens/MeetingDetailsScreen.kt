@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,22 +20,35 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.yoho.presentation.screens.common.AppButton
 import com.example.yoho.presentation.screens.main.home.BottomSheetContent
+import com.example.yoho.presentation.screens.main.scheduled.viewmodel.ScheduledMeetingViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MeetingDetailsScreen() {
+fun MeetingDetailsScreen(
+    meetingId: String?,
+    scheduledMeetingViewModel: ScheduledMeetingViewModel = hiltViewModel(),
+) {
+
+    val meeting = scheduledMeetingViewModel.meetingState
 
     val scope = rememberCoroutineScope()
 
     val modalBottomSheetState = rememberModalBottomSheetState(
         ModalBottomSheetValue.Hidden
     )
+
+    LaunchedEffect(key1 = true) {
+        scheduledMeetingViewModel.getMeetingById(meetingId = meetingId!!)
+    }
 
     val context = LocalContext.current
 
@@ -93,7 +107,7 @@ fun MeetingDetailsScreen() {
                         Text(text = "Date", modifier = Modifier.width(80.dp))
                         Spacer(modifier = Modifier.width(50.dp))
                         Text(
-                            text = ": Today,December 25, 2022",
+                            text = ": ${meeting.value?.date}",
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -111,7 +125,7 @@ fun MeetingDetailsScreen() {
                         Text(text = "Hours", modifier = Modifier.width(80.dp))
                         Spacer(modifier = Modifier.width(50.dp))
                         Text(
-                            text = ": 09:00 - 10:30 AM",
+                            text = ": ${meeting.value?.from} - ${meeting.value?.to}",
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -129,8 +143,10 @@ fun MeetingDetailsScreen() {
                         Text(text = "Topic", modifier = Modifier.width(80.dp))
                         Spacer(modifier = Modifier.width(50.dp))
                         Text(
-                            text = ": Design Thinking Workshop",
-                            fontWeight = FontWeight.Bold
+                            text = ": ${meeting.value?.meetingTopic}",
+                            fontWeight = FontWeight.Bold,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
                         )
                     }
 
@@ -147,8 +163,10 @@ fun MeetingDetailsScreen() {
                         Text(text = "Meeting ID", modifier = Modifier.width(80.dp))
                         Spacer(modifier = Modifier.width(50.dp))
                         Text(
-                            text = ": 177 6751 2386",
-                            fontWeight = FontWeight.Bold
+                            text = ": ${meeting.value?.meetingId}",
+                            fontWeight = FontWeight.Bold,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
                         )
                     }
 
@@ -183,7 +201,7 @@ fun MeetingDetailsScreen() {
                         Text(text = "Time Zone", modifier = Modifier.width(80.dp))
                         Spacer(modifier = Modifier.width(50.dp))
                         Text(
-                            text = ": Chennai(+5:30)",
+                            text = ": ${meeting.value?.timeZone}",
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -201,7 +219,7 @@ fun MeetingDetailsScreen() {
                         Text(text = "Repeat", modifier = Modifier.width(80.dp))
                         Spacer(modifier = Modifier.width(50.dp))
                         Text(
-                            text = ": Never",
+                            text = ": ${meeting.value?.repeat}",
                             fontWeight = FontWeight.Bold
                         )
                     }

@@ -1,7 +1,10 @@
 package com.example.yoho.di
 
+import com.example.yoho.data.local.dao.MeetingDao
+import com.example.yoho.data.local.database.YoHoDatabase
 import com.example.yoho.data.remote.api.MainApi
 import com.example.yoho.data.remote.repository.MainRepositoryImplementation
+import com.example.yoho.domain.model.local.Meeting
 import com.example.yoho.domain.repository.MainRepository
 import com.example.yoho.domain.usecase.MeetingUseCase
 import dagger.Module
@@ -16,6 +19,15 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object MainModule {
 
+    //Dao
+    @Provides
+    @Singleton
+    fun provideMeetingDao(
+        database: YoHoDatabase
+    ): MeetingDao {
+        return database.meetingDao
+    }
+
     //Api
     @Provides
     @Singleton
@@ -29,9 +41,13 @@ object MainModule {
     @Provides
     @Singleton
     fun provideMainRepository(
-        mainApi: MainApi
+        mainApi: MainApi,
+        meetingDao: MeetingDao
     ): MainRepository {
-        return MainRepositoryImplementation(mainApi = mainApi)
+        return MainRepositoryImplementation(
+            mainApi = mainApi,
+            meetingDao = meetingDao
+        )
     }
 
     //UseCase

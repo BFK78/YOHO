@@ -15,6 +15,7 @@ object EndPoints {
     const val UPDATE_PASSWORD = "profile/update-password"
     const val SCHEDULE_MEETING = "meeting/schedule-meeting"
     const val SCHEDULED_MEETING = "meeting/scheduled-meeting"
+    const val COMPLETED_MEETING = "meeting/completed-meeting"
 
     const val test = "test"
 

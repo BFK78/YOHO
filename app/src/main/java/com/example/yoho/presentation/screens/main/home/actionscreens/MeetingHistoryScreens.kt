@@ -1,6 +1,7 @@
 package com.example.yoho.presentation.screens.main.home.actionscreens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
@@ -9,6 +10,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -65,11 +67,14 @@ fun MeetingHistoryScreen(
         }
     ) {
 
-        LazyColumn {
-            items(meetingList.value.data?.data as List<*>)  {
-                SingleMeetingHistory(model = it as Meeting)
+        if (meetingList.value.data != null) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(meetingList.value.data!!) {
+                    SingleMeetingHistory(model = it)
+                }
             }
         }
-
     }
 }

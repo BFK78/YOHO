@@ -146,8 +146,11 @@ fun NavGraphBuilder.mainNavigation(
         }
 
         //Scheduled Screen Action Screens
-        composable(route = Screens.MeetingDetailsScreen.route) {
-            MeetingDetailsScreen()
+        composable(route = Screens.MeetingDetailsScreen.route + "/{meetingId}") {
+            val meetingId = it.arguments?.getString("meetingId")
+            MeetingDetailsScreen(
+                meetingId = meetingId
+            )
         }
 
         //#3
@@ -189,10 +192,10 @@ fun BottomNavigationBar(
 
         items.forEach { it ->
 
-//            navHostController.currentDestination?.route!! == it.route
+            navHostController.currentDestination?.route!! == it.route
             BottomNavigationItem(
                 icon = { Icon(imageVector = it.imageIcon!!, contentDescription = "",) },
-                selected = true,
+                selected = navHostController.currentDestination?.route!! == it.route,
                 label = {
                     Text(text = it.title)
                 },

@@ -14,8 +14,16 @@ class MeetingUseCase(
         return mainRepository.scheduleMeeting(meeting = meeting)
     }
 
-    suspend fun getAllScheduledMeeting(): Flow<Resource<MeetingResponse>> {
+    suspend fun getAllScheduledMeeting(): Flow<Resource<List<Meeting>>> {
         return mainRepository.getAllScheduledMeeting()
+    }
+
+    suspend fun getAllCompletedMeeting(): Flow<Resource<List<Meeting>>> {
+        return mainRepository.getAllCompletedMeeting()
+    }
+
+    suspend fun getMeetingById(meetingId: String): Flow<Resource<Meeting>> {
+        return mainRepository.getMeetingById(meetingId = meetingId)
     }
 
 }

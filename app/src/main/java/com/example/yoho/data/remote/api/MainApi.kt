@@ -19,4 +19,7 @@ interface MainApi {
     @GET(EndPoints.SCHEDULED_MEETING)
     suspend fun getScheduledMeetings(): MeetingResponse
 
+    @GET(EndPoints.COMPLETED_MEETING)
+    suspend fun getCompletedMeeting(): MeetingResponse
+
 }

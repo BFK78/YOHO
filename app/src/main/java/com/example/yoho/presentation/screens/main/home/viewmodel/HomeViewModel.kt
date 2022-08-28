@@ -8,6 +8,7 @@ import com.example.yoho.common.util.Resource
 import com.example.yoho.domain.model.local.Meeting
 import com.example.yoho.domain.usecase.MeetingUseCase
 import com.example.yoho.presentation.screens.main.util.MeetingModel
+import com.example.yoho.presentation.screens.main.util.ScheduledMeetingModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -22,8 +23,8 @@ class HomeViewModel @Inject constructor(
     private val _scheduleMeetingState = mutableStateOf(MeetingModel())
     val scheduleMeetingState: State<MeetingModel> = _scheduleMeetingState
 
-    private val _scheduledMeetingState = mutableStateOf(MeetingModel())
-    val scheduledMeetingState: State<MeetingModel> = _scheduledMeetingState
+    private val _scheduledMeetingState = mutableStateOf(ScheduledMeetingModel())
+    val scheduledMeetingState: State<ScheduledMeetingModel> = _scheduledMeetingState
 
     fun scheduleMeeting(meeting: Meeting) = viewModelScope.launch {
         meetingUseCase.scheduleMeeting(meeting = meeting).onEach {
@@ -53,15 +54,16 @@ class HomeViewModel @Inject constructor(
         }.launchIn(this)
     }
 
-    fun getAllScheduledMeeting() = viewModelScope.launch {
+    fun getAllCompletedMeeting() = viewModelScope.launch {
 
-        meetingUseCase.getAllScheduledMeeting().onEach {
+        meetingUseCase.getAllCompletedMeeting().onEach {
 
             when(it) {
                 is Resource.Loading -> {
 
                     _scheduledMeetingState.value = scheduledMeetingState.value.copy(
-                        isLoading = true
+                        isLoading = true,
+                        data = it.data?:emptyList()
                     )
 
                 }
@@ -80,7 +82,8 @@ class HomeViewModel @Inject constructor(
 
                     _scheduledMeetingState.value = scheduledMeetingState.value.copy(
                         isLoading = false,
-                        message = it.message!!
+                        message = it.message!!,
+                        data = it.data
                     )
 
                 }
